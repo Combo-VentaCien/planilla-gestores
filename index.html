@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#2563eb" />
-  <title>Planilla de Gestores</title>
+  <title>Planilla de Venta Cienfuegos</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
   <link rel="apple-touch-icon" href="icon-192.png" />
@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <style>
-    /* Estilos de la Planilla de Venta (misma línea visual) */
+    /* (estilos exactamente igual que antes, sin cambios) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
@@ -46,17 +46,6 @@
       justify-content: center;
       padding: 24px 16px 60px;
       line-height: 1.5;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    /* Permitir seleccionar y editar solo dentro de los campos del formulario */
-    input, textarea, select {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
     }
 
     .app { max-width: 720px; width: 100%; }
@@ -177,6 +166,17 @@
     .zelle-box, .gestor-box { background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 16px 16px 4px; margin-top: 4px; }
     .zelle-box .group:last-child, .gestor-box .group:last-child { margin-bottom: 0; }
 
+    .paste-box {
+      background: var(--card-bg); border: 1px solid var(--border-light); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 18px 20px 20px; margin-bottom: 14px;
+    }
+    .paste-box textarea#pasteInput { min-height: 90px; }
+    .paste-box .hint { text-align: left; margin-top: 8px; }
+    input.autofilled, textarea.autofilled {
+      background: #fffbeb !important; border-color: #fcd34d !important;
+      transition: background 1.5s ease, border-color 1.5s ease;
+    }
+
     .fijo-tag { font-weight: 400; font-size: 12px; color: var(--text-muted); }
 
     .submit-area { padding: 22px 32px 32px; border-top: 1px solid var(--border-light); margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
@@ -216,458 +216,871 @@
       .ticket { border-radius: 12px; }
       input, textarea, select { font-size: 13px; padding: 8px 12px; }
     }
-
-    /* ===== Planilla de Gestores: añadidos ===== */
-    .legend{font-size:12px;color:var(--text-muted);margin-bottom:4px}
-    .req{color:var(--danger);font-weight:700}
-    .opt{font-weight:400;color:var(--text-muted);font-size:12px}
-    .lbl{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:4px}
-    .box{background:#f8fafc;border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:16px}
-    .group[hidden]{display:none}
-    .invalid input,.invalid textarea{border-color:var(--danger);background:var(--danger-soft)}
-    .err{color:var(--danger);font-size:12px;margin-top:3px}
-    .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    .invalid .seg-o span{border-color:var(--danger)}
-    .seg-o{margin:0;cursor:pointer;position:relative}
-    .seg-o input{position:absolute;opacity:0;width:0;height:0}
-    .seg-o span{display:flex;justify-content:center;gap:6px;padding:11px;border:1.5px solid var(--border-light);border-radius:var(--radius-sm);background:#fafbfc;font-weight:600;font-size:14px;color:var(--text-secondary)}
-    .seg-o input:checked+span{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-hover);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-    .seg-o input:focus-visible+span{outline:2px solid var(--accent)}
-    .perfil{margin-bottom:14px}
-    .perfil .btn-group{margin:8px 0}
-    .perfil .btn{padding:9px 12px;font-size:13px}
-    .chk{display:flex;gap:8px;align-items:center;font-size:12px}
-    .chk input{width:auto}
-    .resumen{font-size:13px;font-weight:600;padding:10px 14px;border-radius:var(--radius-sm);background:var(--success-soft);color:var(--success)}
-    .resumen.warn{background:#fffbeb;color:#92400e}
-    .prev summary{cursor:pointer;font-size:13px;color:var(--text-secondary)}
-    .prev pre{white-space:pre-wrap;font:13px/1.5 var(--font);background:#f8fafc;border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:12px;margin-top:8px}
-    .dlg{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:1100;display:flex;align-items:center;justify-content:center;padding:16px}
-    .dlg-box{background:#fff;border-radius:var(--radius);padding:20px;max-width:420px;width:100%;box-shadow:var(--shadow)}
-    .dlg-box h2{font-size:17px;margin-bottom:6px}
-    .dlg-box p{font-size:14px;color:var(--text-secondary)}
-    .dlg-b{display:flex;flex-direction:column;gap:8px;margin-top:16px}
-    .dlg-b .btn{min-width:0}
-    .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1e293b;color:#fff;padding:10px 16px;border-radius:30px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:1200;max-width:90vw;text-align:center}
-    .toast.on{opacity:1;transform:translate(-50%,0)}
-    @media (max-width:600px){input,textarea,select{font-size:16px!important}.box{padding:12px}.perfil .btn-group{flex-direction:row}.perfil .btn{min-width:0}}
-
   </style>
 </head>
 <body>
   <div class="app">
+
     <div class="status-bar" id="statusBar">
-      <div class="status-left"><span class="dot"></span><span id="statusText">En línea</span></div>
-      <span class="save-indicator" id="saveIndicator">Sin borrador guardado todavía</span>
+      <div class="status-left">
+        <span class="dot"></span>
+        <span id="statusText">En línea</span>
+      </div>
+      <span class="save-indicator" id="saveIndicator">Borrador guardado en este dispositivo</span>
+    </div>
+
+    <div class="category-picker">
+      <button type="button" class="cat-btn" id="btnVenta" onclick="switchCategory('venta')">
+        <span class="cat-title">📦 Planilla de Venta</span>
+        <span class="cat-sub">Venta de equipos, con Zelle</span>
+      </button>
+      <button type="button" class="cat-btn" id="btnGeneral" onclick="switchCategory('general')">
+        <span class="cat-title">🧾 Planilla General</span>
+        <span class="cat-sub">Cliente, garantía, comisión</span>
+      </button>
+    </div>
+
+    <div class="paste-box">
+      <div class="section-title"><span class="emoji">🪄</span> Autocompletar desde el mensaje del cliente</div>
+      <textarea id="pasteInput" placeholder="Pega aquí el texto tal cual te lo mandó el cliente por WhatsApp (nombre, CI, equipo, dirección, precio, etc. en cualquier orden)"></textarea>
+      <div class="btn-group" style="margin-top:10px;">
+        <button type="button" class="btn btn-primary" id="autofillBtn">🪄 Autocompletar campos</button>
+        <button type="button" class="btn btn-primary" id="iaBtn">🤖 Analizar conversación con IA</button>
+        <button type="button" class="btn btn-outline" id="clearPasteBtn">🗑️ Borrar texto pegado</button>
+      </div>
+      <div class="hint" id="autofillResult">Detecta lo que puede (nombre, CI, teléfono, equipo, dirección, montos...). Siempre revisa antes de enviar.</div>
     </div>
 
     <div class="ticket">
       <header>
         <div class="header-left">
-          <span class="badge">📋 Pedidos con gestor</span>
-          <h1>PLANILLA DE GESTORES</h1>
-          <div class="sub">Completa los datos, revisa y envía por WhatsApp</div>
+          <span class="badge" id="headerBadge">📋 Formulario de venta</span>
+          <h1 id="headerTitle">Planilla de Venta</h1>
+          <div class="sub" id="headerSub">Completa los datos y envía directo por WhatsApp</div>
         </div>
-        <div class="stamp">Gestores</div>
+        <div class="stamp">Original</div>
       </header>
 
-      <form id="formGestores" novalidate autocomplete="off">
-        <p class="legend"><span class="req">*</span> Obligatorio &nbsp;·&nbsp; <span class="opt">(opcional)</span> puedes dejarlo vacío</p>
-        <div id="secciones"></div>
+      <form id="formVenta" class="planilla-form">
+        <div class="form-grid">
+          <div class="group">
+            <label for="v_fecha">📅 Fecha</label>
+            <input type="date" id="v_fecha" name="fecha" />
+          </div>
+          <div class="group">
+            <label for="v_nombreCliente">👤 Nombre del cliente</label>
+            <input type="text" id="v_nombreCliente" name="nombreCliente" placeholder="Nombre completo" />
+          </div>
+          <div class="group">
+            <label for="v_telCliente">📱 Teléfono del cliente</label>
+            <input type="tel" id="v_telCliente" name="telCliente" placeholder="5xxxxxxx" />
+          </div>
+          <div class="group">
+            <label for="v_equipo">📦 Equipo a comprar</label>
+            <input type="text" id="v_equipo" name="equipo" placeholder="Ej: iPhone 13, 128GB" />
+          </div>
+          <div class="group">
+            <label for="v_cantidad">💵 Cantidad y tipo de moneda</label>
+            <input type="text" id="v_cantidad" name="cantidad" placeholder="Ej: 150 USD" />
+          </div>
+          <div class="group">
+            <label for="v_cambio">💱 Cambio</label>
+            <input type="text" id="v_cambio" name="cambio" placeholder="Ej: 1 USD = 380 CUP" />
+          </div>
+          <div class="group full-width">
+            <label for="v_direccion">📍 Dirección</label>
+            <input type="text" id="v_direccion" name="direccion" placeholder="Calle, número, entre calles" />
+          </div>
+          <div class="group full-width">
+            <label for="v_referencia">📍 Punto de referencia</label>
+            <input type="text" id="v_referencia" name="referencia" placeholder="Ej: cerca del parque..." />
+          </div>
+          <div class="group full-width">
+            <label for="v_domicilio">🛵 Costo del domicilio (municipio)</label>
+            <input type="text" id="v_domicilio" name="domicilio" placeholder="Ej: 200 CUP" />
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="section-title"><span class="emoji">🏦</span> En caso de Zelle — datos de quien transfiere</div>
+          <div class="zelle-box">
+            <div class="form-grid" style="gap:12px 16px;">
+              <div class="group">
+                <label for="v_zelleNombre">👤 Nombre</label>
+                <input type="text" id="v_zelleNombre" name="zelleNombre" placeholder="Nombre completo" />
+              </div>
+              <div class="group">
+                <label for="v_zelleTelefono">📱 Teléfono</label>
+                <input type="tel" id="v_zelleTelefono" name="zelleTelefono" placeholder="Número de contacto" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="section-title"><span class="emoji">👤</span> Datos del gestor <span class="fijo-tag">(fijos)</span></div>
+          <div class="form-grid">
+            <div class="group">
+              <label for="v_gestorNombre">👤 Nombre del gestor</label>
+              <input type="text" id="v_gestorNombre" name="gestorNombre" value="Claudia Yamaye González Rodríguez" readonly />
+            </div>
+            <div class="group">
+              <label for="v_gestorTelefono">📱 Teléfono del gestor</label>
+              <input type="tel" id="v_gestorTelefono" name="gestorTelefono" value="54571729" readonly />
+            </div>
+            <div class="group full-width">
+              <label for="v_gestorTarjeta">💳 Tarjeta del gestor</label>
+              <input type="text" id="v_gestorTarjeta" name="gestorTarjeta" value="9224-0699-9677-9001" readonly />
+            </div>
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="group full-width" style="margin-bottom:0;">
+            <label for="v_observaciones">📝 Observaciones</label>
+            <textarea id="v_observaciones" name="observaciones" placeholder="Cualquier detalle adicional..."></textarea>
+          </div>
+        </div>
 
         <div class="submit-area">
-          <div class="resumen" id="resumen" role="status" aria-live="polite"></div>
-          <details class="prev"><summary>👁️ Ver vista previa del mensaje</summary><pre id="preview"></pre></details>
           <div class="btn-group">
-            <button type="button" class="btn btn-primary" id="btnEnviar">📤 Enviar por WhatsApp</button>
-            <button type="button" class="btn btn-outline" id="btnCopiar">📋 Copiar planilla</button>
+            <button type="submit" class="btn btn-primary">📤 Enviar por WhatsApp</button>
+            <button type="button" class="btn btn-outline copy-btn">📋 Copiar mensaje</button>
           </div>
-          <button type="button" class="btn btn-ghost" id="btnLimpiar">🗑️ Limpiar todos los campos</button>
-          <div class="hint">Los campos opcionales vacíos no se incluyen en el mensaje. Sin conexión, usa «Copiar planilla» y pégala en el chat cuando vuelva la señal.</div>
+          <button type="button" class="btn btn-ghost clear-btn">🗑️ Borrar borrador de esta planilla</button>
+          <div class="hint">Los campos vacíos no se incluirán. Si estás sin conexión, usa "Copiar mensaje" y pégalo en el chat apenas vuelva la señal.</div>
         </div>
       </form>
-      <footer>Planilla de Gestores · funciona sin conexión, se guarda en este dispositivo</footer>
+
+      <form id="formGeneral" class="planilla-form" style="display:none;">
+        <div class="form-grid">
+          <div class="group">
+            <label for="g_fecha">📅 Fecha</label>
+            <input type="date" id="g_fecha" name="fecha" />
+          </div>
+          <div class="group">
+            <label for="g_nombreCliente">👤 Nombre y Apellido del cliente</label>
+            <input type="text" id="g_nombreCliente" name="nombreCliente" placeholder="Nombre completo" />
+          </div>
+          <div class="group">
+            <label for="g_ciCliente">🪪 CI del cliente</label>
+            <input type="text" id="g_ciCliente" name="ciCliente" placeholder="11 dígitos" inputmode="numeric" maxlength="11" />
+          </div>
+          <div class="group">
+            <label for="g_telCliente">📱 Teléfono del cliente</label>
+            <input type="tel" id="g_telCliente" name="telCliente" placeholder="5xxxxxxx" />
+          </div>
+          <div class="group">
+            <label for="g_equipo">📦 Equipo a comprar</label>
+            <input type="text" id="g_equipo" name="equipo" placeholder="Ej: iPhone 13, 128GB" />
+          </div>
+          <div class="group">
+            <label for="g_garantia">🛡️ Garantía</label>
+            <input type="text" id="g_garantia" name="garantia" placeholder="Ej: 3 meses" />
+          </div>
+          <div class="group full-width">
+            <label for="g_direccion">📍 Dirección</label>
+            <input type="text" id="g_direccion" name="direccion" placeholder="Calle, número, entre calles" />
+          </div>
+          <div class="group">
+            <label for="g_cantidad">💵 Cantidad a pagar</label>
+            <input type="text" id="g_cantidad" name="cantidad" placeholder="Ej: 150 USD" />
+          </div>
+          <div class="group">
+            <label for="g_vuelto">💰 Vuelto</label>
+            <input type="text" id="g_vuelto" name="vuelto" placeholder="Ej: 20 CUP" />
+          </div>
+          <div class="group full-width">
+            <label for="g_domicilio">🛵 Costo del domicilio</label>
+            <input type="text" id="g_domicilio" name="domicilio" placeholder="Ej: 200 CUP" />
+          </div>
+          <div class="group">
+            <label for="g_pagaQuien">🙋 Paga el domicilio</label>
+            <select id="g_pagaQuien" name="pagaQuien">
+              <option value="">Seleccionar...</option>
+              <option value="Gestor">Gestor</option>
+              <option value="Cliente">Cliente</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="section-title"><span class="emoji">🏦</span> En caso de Zelle — datos de quien transfiere</div>
+          <div class="zelle-box">
+            <div class="form-grid" style="gap:12px 16px;">
+              <div class="group full-width">
+                <label for="g_zelleTelefono">📱 Teléfono del que va a pagar por Zelle</label>
+                <input type="tel" id="g_zelleTelefono" name="zelleTelefono" placeholder="Número de contacto" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="section-title"><span class="emoji">👤</span> Datos del gestor <span class="fijo-tag">(prellenados, editables)</span></div>
+          <div class="gestor-box">
+            <div class="form-grid">
+              <div class="group">
+                <label for="g_gestorNombre">👤 Nombre de Gestor</label>
+                <input type="text" id="g_gestorNombre" name="gestorNombre" value="Claudia Yamaye González Rodríguez" />
+              </div>
+              <div class="group">
+                <label for="g_gestorTelefono">📱 Teléfono del Gestor</label>
+                <input type="tel" id="g_gestorTelefono" name="gestorTelefono" value="54571729" />
+              </div>
+              <div class="group">
+                <label for="g_gestorTarjeta">💳 Tarjeta del Gestor</label>
+                <input type="text" id="g_gestorTarjeta" name="gestorTarjeta" value="9224-0699-9677-9001" />
+              </div>
+              <div class="group">
+                <label for="g_comision">🧮 Comisión</label>
+                <input type="text" id="g_comision" name="comision" placeholder="Ej: 10 USD" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-break">
+          <div class="group full-width" style="margin-bottom:0;">
+            <label for="g_observaciones">📝 Observaciones</label>
+            <textarea id="g_observaciones" name="observaciones" placeholder="Cualquier detalle adicional..."></textarea>
+          </div>
+        </div>
+
+        <div class="submit-area">
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary">📤 Enviar por WhatsApp</button>
+            <button type="button" class="btn btn-outline copy-btn">📋 Copiar mensaje</button>
+          </div>
+          <button type="button" class="btn btn-ghost clear-btn">🗑️ Borrar borrador de esta planilla</button>
+          <div class="hint">Los campos vacíos no se incluirán. Si estás sin conexión, usa "Copiar mensaje" y pégalo en el chat apenas vuelva la señal.</div>
+        </div>
+      </form>
+
+      <footer>Planilla · de · Venta · funciona sin conexión, se guarda en este dispositivo</footer>
     </div>
   </div>
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    // ---------- Disuasión de copia del código ----------
-    // NOTA: esto solo dificulta la copia casual. El código de una página web
-    // siempre llega al navegador y puede verse con el menú del navegador,
-    // con "ver código fuente", desactivando JavaScript o con herramientas externas.
-    (function () {
-      const esCampo = (el) =>
-        el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
-
-      // Bloquear menú contextual (clic derecho / long-press)
-      document.addEventListener("contextmenu", (e) => e.preventDefault());
-
-      // Bloquear atajos típicos de inspección y copia del código
-      document.addEventListener("keydown", (e) => {
-        const k = (e.key || "").toLowerCase();
-        const ctrl = e.ctrlKey || e.metaKey;
-        if (e.key === "F12") { e.preventDefault(); return; }
-        if (ctrl && e.shiftKey && (k === "i" || k === "j" || k === "c" || k === "k")) { e.preventDefault(); return; }
-        if (ctrl && (k === "u" || k === "s")) { e.preventDefault(); return; }
-        if (ctrl && k === "a" && !esCampo(e.target)) { e.preventDefault(); return; }
-        if (ctrl && k === "c" && !esCampo(e.target)) { e.preventDefault(); }
-      }, true);
-
-      // Bloquear copia/corte/arrastre/selección fuera de los campos del formulario
-      const bloquear = (e) => { if (!esCampo(e.target)) e.preventDefault(); };
-      document.addEventListener("copy", bloquear, true);
-      document.addEventListener("cut", bloquear, true);
-      document.addEventListener("dragstart", bloquear, true);
-      document.addEventListener("selectstart", bloquear, true);
-    })();
-  </script>
 
   <script>
     // Número de WhatsApp de destino: +5354571729 (solo dígitos con código de país).
     const WHATSAPP_DESTINO = "5354571729";
-    // Claves propias de esta planilla (no se mezclan con las de la Planilla de Venta).
-    const K = { borrador: "gestores_borrador", perfiles: "gestores_perfiles", activo: "gestores_perfil_activo" };
 
-    const ls = {
-      get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-      set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { /* sin almacenamiento */ } },
-      del: (k) => { try { localStorage.removeItem(k); } catch (e) { /* nada */ } },
+    // ---------- CATEGORÍAS ----------
+    const CATEGORIES = {
+      venta: {
+        formId: "formVenta",
+        badge: "📦 Formulario de venta",
+        title: "Planilla de Venta",
+        sub: "Venta de equipos con opción de pago por Zelle",
+        storageKey: "planilla_draft_venta",
+        title_msg: "❗❗ PLANILLA DE VENTA ❗❗",
+        fieldDefs: [
+          { id: "fecha", label: "📅 Fecha", isDate: true },
+          { id: "nombreCliente", label: "👤 Nombre del cliente" },
+          { id: "telCliente", label: "📱 Teléfono del cliente" },
+          { id: "equipo", label: "📦 Equipo a comprar" },
+          { id: "cantidad", label: "💵 Cantidad y tipo de moneda" },
+          { id: "cambio", label: "💱 Cambio" },
+          { id: "direccion", label: "📍 Dirección" },
+          { id: "referencia", label: "📍 Punto de referencia" },
+          { id: "domicilio", label: "🛵 Costo del domicilio si es para municipio" },
+        ],
+        zelleDefs: [
+          { id: "zelleNombre", label: "👤 Nombre" },
+          { id: "zelleTelefono", label: "📱 Teléfono" },
+        ],
+        zelleTitle: "🏦 En caso de Zelle, datos de quien realizará la transferencia:",
+        gestorDefs: [
+          { id: "gestorNombre", label: "👤 Nombre del gestor" },
+          { id: "gestorTelefono", label: "📱 Teléfono del gestor" },
+          { id: "gestorTarjeta", label: "💳 Tarjeta del gestor" },
+        ],
+      },
+      general: {
+        formId: "formGeneral",
+        badge: "🧾 Formulario general",
+        title: "Planilla General",
+        sub: "Cliente, garantía, gestor y comisión",
+        storageKey: "planilla_draft_general",
+        title_msg: "❗❗ PLANILLA ❗❗",
+        fieldDefs: [
+          { id: "fecha", label: "➡️Fecha", isDate: true },
+          { id: "nombreCliente", label: "➡️Nombre y Apellido del cliente" },
+          { id: "ciCliente", label: "➡️CI del cliente" },
+          { id: "telCliente", label: "➡️Teléfono del cliente" },
+          { id: "equipo", label: "➡️Equipo a comprar" },
+          { id: "direccion", label: "➡️Dirección" },
+          { id: "garantia", label: "➡️Garantía" },
+          { id: "cantidad", label: "➡️Cantidad a pagar" },
+          { id: "vuelto", label: "➡️Vuelto" },
+          { id: "domicilio", label: "➡️Costo del domicilio" },
+          { id: "pagaQuien", label: "➡️Paga el gestor o el cliente" },
+        ],
+        zelleDefs: [
+          { id: "zelleTelefono", label: "➡️Teléfono del q va a pagar por Zelle" },
+        ],
+        zelleTitle: "🏦 En caso de Zelle:",
+        gestorDefs: [
+          { id: "gestorNombre", label: "➡️Nombre de Gestor" },
+          { id: "gestorTelefono", label: "➡️Teléfono del Gestor" },
+          { id: "gestorTarjeta", label: "➡️Tarjeta del Gestor" },
+          { id: "comision", label: "➡️Comisión" },
+        ],
+      },
     };
-    const $ = (id) => document.getElementById(id);
-    const dig = (s) => String(s || "").replace(/\D/g, "");
-    const tel8 = (s) => { let d = dig(s); if (d.length === 10 && d.indexOf("53") === 0) d = d.slice(2); return d; };
-    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-    const hoy = () => { const n = new Date(); return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0"); };
-    const fmtTarjeta = (s) => dig(s).slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1-");
 
-    // ---------- VALIDADORES ----------
-    const V = {
-      tel: (v) => (tel8(v).length === 8 ? "" : "Debe tener 8 dígitos (ej. 5xxxxxxx)"),
-      telAny: (v) => { const n = dig(v).length; return n >= 8 && n <= 15 ? "" : "Teléfono no válido (8 a 15 dígitos)"; },
-      cifra: (v) => (/\d/.test(v) ? "" : "Incluye una cifra (ej. 25 USD)"),
-      tarjeta: (v) => (dig(v).length === 16 ? "" : "La tarjeta debe tener 16 dígitos"),
-    };
+    let currentCategory = localStorage.getItem("planilla_categoria") || "venta";
 
-    // ---------- ESTRUCTURA (única fuente de verdad: formulario, validación y mensaje) ----------
-    const SECS = [
-      ["pedido", "📦", "INFORMACIÓN DEL PEDIDO"],
-      ["zelle", "💳", "DATOS DE QUIEN REALIZARÁ EL PAGO POR ZELLE"],
-      ["gestor", "👤", "DATOS DEL GESTOR"],
-      ["obs", "ℹ️", "OBSERVACIONES"],
-    ];
-    const F = (id, sec, e, label, o) => Object.assign({ id, sec, e, label }, o || {});
-    // req: obligatorio · cond: solo existe/obliga si la forma de cobro es Transferencia
-    const FIELDS = [
-      F("fechaPedido", "pedido", "📅", "Fecha del pedido", { type: "date", req: 1 }),
-      F("fechaEntrega", "pedido", "🚚", "Fecha de entrega", { type: "date", req: 1 }),
-      F("nombreCliente", "pedido", "👤", "Nombre del cliente", { req: 1, ph: "Nombre y apellidos" }),
-      F("telCliente", "pedido", "📱", "Teléfono del cliente", { type: "tel", req: 1, ph: "5xxxxxxx", v: "tel" }),
-      F("combo", "pedido", "🍱", "Combo a comprar", { req: 1, ph: "Ej: Combo familiar" }),
-      F("precio", "pedido", "💵", "Precio", { req: 1, ph: "Ej: 25 USD", v: "cifra" }),
-      F("direccion", "pedido", "📍", "Dirección", { req: 1, full: 1, ph: "Calle, número, entre calles" }),
-      F("referencia", "pedido", "🧭", "Punto de referencia", { full: 1, ph: "Ej: frente al parque" }),
-      F("domicilio", "pedido", "🛵", "Costo del domicilio (si es para municipio)", { full: 1, ph: "Ej: 200 MN", v: "cifra", msg: "Costo del domicilio" }),
-      F("zelleNombre", "zelle", "👤", "Nombre de la persona que realizará el pago", { full: 1, ph: "Nombre completo", msg: "Nombre" }),
-      F("zelleTelefono", "zelle", "📱", "Teléfono", { type: "tel", req: 1, ph: "Número de contacto", v: "telAny" }),
-      F("zelleHorario", "zelle", "🕒", "Horario en que está disponible", { ph: "Ej: 2:00 pm a 6:00 pm" }),
-      F("gestorNombre", "gestor", "👤", "Nombre del gestor", { req: 1, ph: "Nombre completo" }),
-      F("gestorTelefono", "gestor", "📱", "Teléfono del gestor", { type: "tel", req: 1, ph: "5xxxxxxx", v: "tel" }),
-      F("subida", "gestor", "📈", "Cuánto le subió al combo", { req: 1, ph: "Ej: 5 USD", v: "cifra", msg: "Subida al combo" }),
-      F("tasa", "gestor", "💱", "Tasa de cambio", { ph: "Ej: 1 USD = 380 MN", v: "cifra" }),
-      F("formaCobro", "gestor", "💰", "Forma de cobrar", { type: "radio", req: 1, full: 1, opts: ["Efectivo", "Transferencia"] }),
-      F("gestorTarjeta", "gestor", "💳", "Tarjeta del gestor", { type: "card", cond: 1, full: 1, ph: "0000-0000-0000-0000", v: "tarjeta" }),
-      F("observaciones", "obs", "📝", "Observaciones", { type: "area", full: 1, ph: "Cualquier información adicional relacionada con el pedido..." }),
-    ];
+    function formatFecha(value) {
+      if (!value) return "";
+      const [y, m, d] = value.split("-");
+      return `${d}/${m}/${y}`;
+    }
 
-    const PERFIL_HTML = `<div class="perfil">
-      <label for="perfilSel">🔖 Perfil de gestor guardado <span class="opt">(opcional)</span></label>
-      <select id="perfilSel"></select>
-      <div class="btn-group">
-        <button type="button" class="btn btn-outline" id="perfilGuardar">💾 Guardar perfil</button>
-        <button type="button" class="btn btn-outline" id="perfilBorrar">🗑️ Eliminar perfil</button>
-      </div>
-      <label class="chk" for="perfilTarjeta"><input type="checkbox" id="perfilTarjeta" /> Guardar también mi tarjeta en este dispositivo</label>
-      <div class="hint" style="text-align:left">Cada gestor usa su propio perfil. Se guarda solo en este navegador y nunca se modifica sin tu confirmación.</div>
-    </div>`;
+    function buildMessage(cat, data) {
+      let lines = [];
+      lines.push(cat.title_msg);
+      lines.push("");
 
-    function campo(f) {
-      const marca = f.cond || f.req ? '<span class="req" title="Obligatorio">*</span>' : '<span class="opt">(opcional)</span>';
-      const txt = `${f.e} ${f.label} ${marca}`;
-      let lab, ctl;
-      if (f.type === "radio") {
-        lab = `<div class="lbl">${txt}</div>`;
-        ctl = `<div class="seg" role="radiogroup" aria-label="${f.label}">` + f.opts.map((o) =>
-          `<label class="seg-o"><input type="radio" name="${f.id}" value="${o}" /><span>${o === "Efectivo" ? "💵" : "🏦"} ${o}</span></label>`).join("") + "</div>";
-      } else {
-        lab = `<label for="f_${f.id}">${txt}</label>`;
-        const a = `id="f_${f.id}" name="${f.id}" placeholder="${f.ph || ""}"`;
-        if (f.type === "area") ctl = `<textarea ${a} maxlength="500"></textarea>`;
-        else if (f.type === "date") ctl = `<input type="date" ${a} />`;
-        else if (f.type === "tel") ctl = `<input type="tel" inputmode="tel" ${a} />`;
-        else if (f.type === "card") ctl = `<input type="text" inputmode="numeric" maxlength="19" ${a} />`;
-        else ctl = `<input type="text" maxlength="120" ${a} />`;
+      cat.fieldDefs.forEach(f => {
+        let val = data[f.id];
+        if (val && val.trim() !== "") {
+          if (f.isDate) val = formatFecha(val);
+          lines.push(`${f.label}: ${val}`);
+        }
+      });
+
+      const zelleHasData = cat.zelleDefs.some(f => data[f.id] && data[f.id].trim() !== "");
+      if (zelleHasData) {
+        lines.push("");
+        lines.push(cat.zelleTitle);
+        cat.zelleDefs.forEach(f => {
+          const val = data[f.id];
+          if (val && val.trim() !== "") lines.push(`${f.label}: ${val}`);
+        });
       }
-      return `<div class="group${f.full ? " full-width" : ""}" id="g_${f.id}">${lab}${ctl}<div class="err" id="e_${f.id}" role="alert"></div></div>`;
-    }
 
-    const form = $("formGestores");
-    $("secciones").innerHTML = SECS.map(([id, e, t]) =>
-      `<section class="section-break"><div class="section-title"><span class="emoji">${e}</span> ${t}</div>` +
-      (id === "gestor" ? PERFIL_HTML : "") +
-      `<div class="form-grid${id === "zelle" ? " box" : ""}">${FIELDS.filter((f) => f.sec === id).map(campo).join("")}</div></section>`).join("");
-
-    // ---------- LECTURA / ESCRITURA DE CAMPOS ----------
-    const val = (id) => (form.elements[id] ? String(form.elements[id].value || "").trim() : "");
-    function put(id, v) {
-      const e = form.elements[id];
-      if (!e) return;
-      if (typeof RadioNodeList !== "undefined" && e instanceof RadioNodeList) Array.prototype.forEach.call(e, (r) => { r.checked = r.value === v; });
-      else e.value = v;
-    }
-    const transf = () => val("formaCobro") === "Transferencia";
-    const visible = (f) => !f.cond || transf();
-
-    // ---------- VALIDACIÓN ----------
-    function errores() {
-      const E = {};
-      FIELDS.forEach((f) => {
-        if (!visible(f)) return;
-        const v = val(f.id);
-        let m = "";
-        if (!v) m = f.req || f.cond ? "Campo obligatorio" : "";
-        else if (f.v) m = V[f.v](v);
-        if (m) E[f.id] = m;
-      });
-      const a = val("fechaPedido"), b = val("fechaEntrega");
-      if (a && b && b < a && !E.fechaEntrega) E.fechaEntrega = "La entrega no puede ser antes del pedido";
-      return E;
-    }
-    function pintar(E, solo) {
-      FIELDS.forEach((f) => {
-        if (solo && f.id !== solo) return;
-        $("e_" + f.id).textContent = E[f.id] || "";
-        $("g_" + f.id).classList.toggle("invalid", !!E[f.id]);
-      });
-    }
-
-    // ---------- MENSAJE DE WHATSAPP ----------
-    function mensaje() {
-      const L = ["❗❗ *PLANILLA DE GESTORES* ❗❗"];
-      SECS.forEach(([id, e, t]) => {
-        const lin = FIELDS.filter((f) => f.sec === id && visible(f) && val(f.id)).map((f) => {
-          const v = val(f.id);
-          if (id === "obs") return v;
-          return `${f.e} ${f.msg || f.label}: ${f.type === "date" ? v.split("-").reverse().join("/") : v}`;
+      const gestorHasData = cat.gestorDefs.some(f => data[f.id] && data[f.id].trim() !== "");
+      if (gestorHasData) {
+        lines.push("");
+        cat.gestorDefs.forEach(f => {
+          const val = data[f.id];
+          if (val && val.trim() !== "") lines.push(`${f.label}: ${val}`);
         });
-        if (lin.length) L.push("", `*${e} ${t}*`, ...lin);
-      });
-      return L.join("\n");
+      }
+
+      if (data.observaciones && data.observaciones.trim() !== "") {
+        lines.push("");
+        lines.push(`📝 Observaciones: ${data.observaciones}`);
+      }
+
+      return lines.join("\n");
     }
 
-    // ---------- DIÁLOGOS Y AVISOS ----------
-    function dlg(titulo, texto, botones) {
-      return new Promise((res) => {
-        const o = document.createElement("div");
-        o.className = "dlg";
-        o.innerHTML = '<div class="dlg-box" role="dialog" aria-modal="true"><h2></h2><p></p><div class="dlg-b"></div></div>';
-        o.querySelector("h2").textContent = titulo;
-        o.querySelector("p").textContent = texto;
-        const fin = (v) => { o.remove(); res(v); };
-        botones.forEach(([t, v, p]) => {
-          const b = document.createElement("button");
-          b.type = "button"; b.className = "btn " + (p ? "btn-primary" : "btn-outline"); b.textContent = t;
-          b.addEventListener("click", () => fin(v));
-          o.querySelector(".dlg-b").appendChild(b);
-        });
-        o.addEventListener("click", (e) => { if (e.target === o) fin(0); });
-        o.addEventListener("keydown", (e) => { if (e.key === "Escape") fin(0); });
-        document.body.appendChild(o);
-        (o.querySelector(".btn-primary") || o.querySelector(".btn")).focus();
+    function getFormData(formEl) {
+      const formData = new FormData(formEl);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value; });
+      return data;
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      return new Promise((resolve, reject) => {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        ta.style.top = "0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+          const ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          ok ? resolve() : reject(new Error("execCommand falló"));
+        } catch (err) {
+          document.body.removeChild(ta);
+          reject(err);
+        }
       });
     }
-    let tt;
-    function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2400); }
+
+    // ---------- 🧠 AUTOCOMPLETADO (se conserva igual) ----------
+    const DEVICE_KEYWORDS = [
+      "iphone", "ipad", "macbook", "imac", "airpods", "apple watch",
+      "samsung", "galaxy", "xiaomi", "redmi", "poco", "huawei", "honor",
+      "tecno", "infinix", "motorola", "moto g", "oneplus", "realme",
+      "tablet", "laptop", "notebook", "smart tv", "tv box", "tv",
+      "play station", "playstation", "ps5", "ps4", "xbox", "nintendo switch",
+      "power bank", "cargador", "audífonos", "auriculares", "bocina", "parlante",
+      "lámpara", "lampara", "lampra"
+    ];
+
+    function normalizeCurrency(raw) {
+      let c = raw.toUpperCase();
+      if (c === "$" || c.startsWith("D")) return "USD";
+      if (c.startsWith("PES") || c === "MN" || c === "CUP") return "MN";
+      return c;
+    }
+
+    function extractMoney(text) {
+      const m = text.match(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/i);
+      if (!m) return null;
+      return { amount: m[1].replace(",", "."), currency: normalizeCurrency(m[2]) };
+    }
+
+    function formatMoneyObj(amount, currency) {
+      return `${amount} ${currency}`;
+    }
+
+    function classifySegments(text) {
+      const segments = text.split(",").map(s => s.trim()).filter(Boolean);
+      const values = {};
+      let nombreSet = false;
+      let equipoSet = false;
+      let cantidadSet = false;
+      let cambioSet = false;
+      let direccionSet = false;
+      let referenciaSet = false;
+
+      const ciRe = /\b\d{11}\b/;
+      const phoneRe = /(?:\+?53)?\s?5\d{7}\b/;
+      const addressRe = /(calle|avenida|\bave\.?\b|reparto|vedado|edificio|apto|apartamento|entre\s)/i;
+      const refRe = /(cerca de|frente a|al lado de|referencia:?)/i;
+      const garantiaRe = /garant[ií]a/i;
+      const domicilioKw = /domicilio|env[ií]o|mensajer[íi]a|delivery/i;
+      const vueltoKw = /vuelto/i;
+      const comisionKw = /comisi[oó]n/i;
+      const zelleKw = /zelle/i;
+      const cambioKw = /cambio|tasa|1\s*usd\s*[=x]/i;
+      const moneyReGlobal = new RegExp("(\\d+[.,]?\\d*)\\s*(usd|cup|mn|mlc|\\$|d[oó]lares|pesos)", "gi");
+
+      function pickFirstMoney(seg) {
+        const m = [...seg.matchAll(moneyReGlobal)];
+        if (m.length) return formatMoneyObj(m[0][1].replace(",", "."), normalizeCurrency(m[0][2]));
+        return null;
+      }
+
+      for (let seg of segments) {
+        if (cambioKw.test(seg) && !cambioSet) {
+          const m = seg.match(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/i);
+          if (m) {
+            values.cambio = formatMoneyObj(m[1].replace(",", "."), normalizeCurrency(m[2]));
+            cambioSet = true;
+            continue;
+          } else {
+            const all = [...seg.matchAll(moneyReGlobal)];
+            if (all.length >= 2) {
+              values.cambio = all.map(m => formatMoneyObj(m[1].replace(",", "."), normalizeCurrency(m[2]))).join(" o ");
+              cambioSet = true;
+              continue;
+            }
+          }
+        }
+
+        if (phoneRe.test(seg)) {
+          const tel = seg.match(phoneRe)[0].replace(/[^\d]/g, "");
+          if (zelleKw.test(seg)) values.zelleTelefono = tel;
+          else if (!values.telCliente) values.telCliente = tel;
+          else if (!values.zelleTelefono) values.zelleTelefono = tel;
+          continue;
+        }
+
+        if (ciRe.test(seg) && !values.ciCliente) {
+          values.ciCliente = seg.match(ciRe)[0];
+          continue;
+        }
+
+        if (garantiaRe.test(seg) && !values.garantia) {
+          values.garantia = seg.replace(garantiaRe, "").trim();
+          continue;
+        }
+
+        if (zelleKw.test(seg) && !new RegExp(moneyReGlobal).test(seg) && !phoneRe.test(seg)) {
+          const name = seg.replace(zelleKw, "").replace(/a nombre de|nombre|es|:/gi, "").trim();
+          if (name && !values.zelleNombre) values.zelleNombre = name;
+          continue;
+        }
+
+        if (addressRe.test(seg) && !direccionSet) {
+          values.direccion = seg;
+          direccionSet = true;
+          continue;
+        }
+
+        if (refRe.test(seg) && !referenciaSet) {
+          values.referencia = seg;
+          referenciaSet = true;
+          continue;
+        }
+
+        if (moneyReGlobal.test(seg)) {
+          const firstMoney = pickFirstMoney(seg);
+          if (!firstMoney) continue;
+
+          if (domicilioKw.test(seg) && !values.domicilio) {
+            values.domicilio = firstMoney;
+            continue;
+          }
+          if (vueltoKw.test(seg) && !values.vuelto) {
+            values.vuelto = firstMoney;
+            continue;
+          }
+          if (comisionKw.test(seg) && !values.comision) {
+            values.comision = firstMoney;
+            continue;
+          }
+
+          if (!equipoSet && /\(/.test(seg) && /\)/.test(seg)) {
+            values.equipo = seg;
+            equipoSet = true;
+            continue;
+          }
+
+          if (!cantidadSet) {
+            const unitMatch = seg.match(/(\d+)\s*([a-zA-Záéíóúñ]+)/i);
+            if (unitMatch && DEVICE_KEYWORDS.some(kw => seg.toLowerCase().includes(kw))) {
+              const unit = unitMatch[2];
+              const moneda = seg.match(/(usd|mn|cup|mlc)/i);
+              const monedaStr = moneda ? moneda[0].toUpperCase() : "";
+              values.cantidad = `${unitMatch[1]} ${unit}${monedaStr ? ' en ' + monedaStr : ''}`;
+              cantidadSet = true;
+              continue;
+            } else {
+              values.cantidad = firstMoney;
+              cantidadSet = true;
+              continue;
+            }
+          }
+
+          if (!cambioSet) {
+            values.cambio = firstMoney;
+            cambioSet = true;
+            continue;
+          }
+        }
+
+        if (!nombreSet && !/\d/.test(seg) && seg.split(/\s+/).length <= 4 && !/calle|avenida|reparto|zelle|domicilio|garantía|vuelto|comisión|cambio/i.test(seg)) {
+          values.nombreCliente = seg;
+          nombreSet = true;
+          continue;
+        }
+
+        if (!equipoSet && DEVICE_KEYWORDS.some(kw => seg.toLowerCase().includes(kw))) {
+          if (!/\(/.test(seg) || !/\)/.test(seg)) {
+            values.equipo = seg;
+            equipoSet = true;
+            continue;
+          }
+        }
+
+        if (seg) {
+          if (!values.observaciones) values.observaciones = seg;
+          else values.observaciones += ", " + seg;
+        }
+      }
+
+      return values;
+    }
+
+    function autofillFreeform(text) {
+      const values = {};
+      const lower = text.toLowerCase();
+
+      let nameMatch = text.match(/(?:me llamo|mi nombre es|soy|nombre:?\s*)\s*([a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+){0,3})/i);
+      if (nameMatch) {
+        values.nombreCliente = nameMatch[1].trim();
+      } else {
+        const tokens = text.split(/[\s,]+/);
+        for (const t of tokens) {
+          if (t.length > 1 && !/\d/.test(t) && !/calle|avenida|reparto|zelle|domicilio|garantía|vuelto|comisión|cambio|usd|mn|cup|mlc/i.test(t)) {
+            values.nombreCliente = t;
+            break;
+          }
+        }
+      }
+
+      const telMatch = text.match(/(?:\+?53)?\s?5\d{7}\b/);
+      if (telMatch) values.telCliente = telMatch[0].replace(/[^\d]/g, "");
+
+      const ciMatch = text.match(/\b\d{11}\b/);
+      if (ciMatch) values.ciCliente = ciMatch[0];
+
+      for (const kw of DEVICE_KEYWORDS) {
+        const idx = lower.indexOf(kw);
+        if (idx !== -1) {
+          const start = idx;
+          let end = text.length;
+          const nextComma = text.indexOf(",", start);
+          const nextDot = text.indexOf(".", start);
+          const nextSemicolon = text.indexOf(";", start);
+          const nextNewline = text.indexOf("\n", start);
+          const stops = [nextComma, nextDot, nextSemicolon, nextNewline].filter(i => i !== -1);
+          if (stops.length) end = Math.min(...stops);
+          let fragment = text.slice(start, end).trim();
+          if (fragment.length > 50) fragment = fragment.slice(0, 50);
+          values.equipo = fragment;
+          break;
+        }
+      }
+
+      const dirMatch = text.match(/(calle[^.,\n]*|avenida[^.,\n]*|reparto[^.,\n]*|vedado[^.,\n]*|edificio[^.,\n]*|apto[^.,\n]*|apartamento[^.,\n]*|entre\s[^.,\n]*)/i);
+      if (dirMatch) values.direccion = dirMatch[0].trim();
+
+      const refMatch = text.match(/(cerca de[^.,\n]*|frente a[^.,\n]*|al lado de[^.,\n]*|referencia:?\s*[^.,\n]*)/i);
+      if (refMatch) values.referencia = refMatch[0].trim();
+
+      const garMatch = text.match(/garant[ií]a[:\s]*([^.,\n]*)/i);
+      if (garMatch && garMatch[1]) values.garantia = garMatch[1].trim();
+
+      const unitMatch = text.match(/(\d+)\s*([a-zA-Záéíóúñ]+)\s*(?:en\s*)?(usd|mn|cup|mlc)?/i);
+      if (unitMatch && DEVICE_KEYWORDS.some(kw => lower.includes(kw))) {
+        const unit = unitMatch[2];
+        const moneda = unitMatch[3] ? unitMatch[3].toUpperCase() : "";
+        values.cantidad = `${unitMatch[1]} ${unit}${moneda ? ' en ' + moneda : ''}`;
+      } else {
+        const money = extractMoney(text);
+        if (money) values.cantidad = formatMoneyObj(money.amount, money.currency);
+      }
+
+      const cambioMatch = text.match(/cambio[:\s]*([^.,\n]*)/i);
+      if (cambioMatch && cambioMatch[1]) {
+        const val = cambioMatch[1].trim();
+        const money = extractMoney(val);
+        if (money) values.cambio = formatMoneyObj(money.amount, money.currency);
+        else values.cambio = val;
+      } else {
+        const rateMatch = text.match(/1\s*(?:usd)?\s*[=x]\s*(\d+)\s*(cup|mn)?/i);
+        if (rateMatch) {
+          const amount = rateMatch[1];
+          const currency = rateMatch[2] ? rateMatch[2].toUpperCase() : "MN";
+          values.cambio = `1 USD = ${amount} ${currency}`;
+        } else {
+          const allMoney = [...text.matchAll(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/gi)];
+          if (allMoney.length >= 2) {
+            const m1 = { amount: allMoney[0][1].replace(",", "."), currency: normalizeCurrency(allMoney[0][2]) };
+            const m2 = { amount: allMoney[1][1].replace(",", "."), currency: normalizeCurrency(allMoney[1][2]) };
+            if (m1.currency !== m2.currency) {
+              values.cambio = `${m1.amount} ${m1.currency} o ${m2.amount} ${m2.currency}`;
+            }
+          }
+        }
+      }
+
+      const domMatch = text.match(/domicilio[:\s]*([^.,\n]*)/i);
+      if (domMatch && domMatch[1]) values.domicilio = domMatch[1].trim();
+
+      const zelleIdx = lower.indexOf("zelle");
+      if (zelleIdx !== -1) {
+        const window_ = text.slice(zelleIdx, zelleIdx + 80);
+        const tel = window_.match(/(?:\+?53)?\s?5\d{7}\b/);
+        if (tel) values.zelleTelefono = tel[0].replace(/[^\d]/g, "");
+        const name = window_.match(/(?:a nombre de|nombre:?\s*)\s*([a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+){0,2})/i);
+        if (name) values.zelleNombre = name[1].trim();
+      }
+
+      return values;
+    }
+
+    function autofillFromText(cat, formEl, rawText) {
+      const text = rawText.trim();
+      if (!text) return 0;
+
+      const segValues = classifySegments(text);
+      const freeValues = autofillFreeform(text);
+      const values = Object.assign({}, freeValues, segValues);
+
+      let filledCount = 0;
+      Object.keys(values).forEach(key => {
+        const val = values[key];
+        if (!val) return;
+        const field = formEl.elements.namedItem(key);
+        if (!field) return;
+        if (field.value && field.value.trim() !== "") return;
+        field.value = val;
+        field.classList.add("autofilled");
+        setTimeout(() => field.classList.remove("autofilled"), 4000);
+        filledCount++;
+      });
+
+      const fechaField = formEl.elements.namedItem("fecha");
+      if (fechaField && !fechaField.value) {
+        const now = new Date();
+        fechaField.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      }
+
+      return filledCount;
+    }
+
+    function runAutofill() {
+      const text = document.getElementById("pasteInput").value;
+      const cat = CATEGORIES[currentCategory];
+      const formEl = document.getElementById(cat.formId);
+      const count = autofillFromText(cat, formEl, text);
+      const resultEl = document.getElementById("autofillResult");
+      resultEl.textContent = count > 0
+        ? `✅ Se completaron ${count} campo(s) automáticamente. Revisa antes de enviar — el resto lo completas a mano.`
+        : "⚠️ No se detectó suficiente información en el texto. Completa los campos a mano.";
+      scheduleSave(formEl, cat.storageKey);
+    }
 
     // ---------- AUTOGUARDADO ----------
-    let st;
-    function guardar() { clearTimeout(st); st = setTimeout(guardarYa, 400); }
-    function scheduleSave() { guardar(); }          // lo usa ia.js
-    function guardarYa() {
-      const d = {};
-      FIELDS.forEach((f) => { d[f.id] = form.elements[f.id].value; });
-      ls.set(K.borrador, JSON.stringify(d));
-      const n = new Date();
-      $("saveIndicator").textContent = "Borrador guardado · " + String(n.getHours()).padStart(2, "0") + ":" + String(n.getMinutes()).padStart(2, "0");
+    let saveTimer = null;
+    function scheduleSave(formEl, storageKey) {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        const data = getFormData(formEl);
+        localStorage.setItem(storageKey, JSON.stringify(data));
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("saveIndicator").textContent = `Borrador guardado · ${hh}:${mm}`;
+      }, 400);
     }
-    function restaurar() {
+
+    function restoreDraft(formEl, storageKey) {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
       try {
-        const d = JSON.parse(ls.get(K.borrador) || "null");
-        if (!d || typeof d !== "object") return false;
-        FIELDS.forEach((f) => { if (typeof d[f.id] === "string" && d[f.id]) put(f.id, d[f.id]); });
-        return true;
-      } catch (e) { return false; }
-    }
-    window.addEventListener("pagehide", () => { if (st) { clearTimeout(st); guardarYa(); } });
-
-    // ---------- PERFILES DE GESTOR (cada uno aislado; nada se sobrescribe sin confirmar) ----------
-    let perfiles = [];
-    try { perfiles = JSON.parse(ls.get(K.perfiles) || "[]"); } catch (e) { perfiles = []; }
-    if (!Array.isArray(perfiles)) perfiles = [];
-    perfiles = perfiles.filter((p) => p && p.id && p.nombre && p.telefono);
-    let activo = ls.get(K.activo) || "";
-    const pf = (id) => perfiles.find((p) => p.id === id);
-    if (!pf(activo)) activo = "";
-    const ident = () => ({ n: val("gestorNombre"), t: tel8(val("gestorTelefono")), c: dig(val("gestorTarjeta")) });
-    const identP = (p) => (p ? { n: p.nombre, t: tel8(p.telefono), c: dig(p.tarjeta) } : { n: "", t: "", c: "" });
-    const igual = (a, b) => a.n === b.n && a.t === b.t && a.c === b.c;
-    const guardaPerfiles = () => { ls.set(K.perfiles, JSON.stringify(perfiles)); ls.set(K.activo, activo); };
-
-    function opcionesPerfil() {
-      $("perfilSel").innerHTML = '<option value="">— Sin perfil (escribir mis datos) —</option>' +
-        perfiles.map((p) => `<option value="${esc(p.id)}">${esc(p.nombre)} · ${esc(p.telefono)}</option>`).join("");
-      $("perfilSel").value = activo;
-      $("perfilTarjeta").checked = !!(pf(activo) && pf(activo).tarjeta);
-    }
-    function aplicarPerfil(id) {
-      const p = pf(id);
-      activo = p ? id : "";
-      put("gestorNombre", p ? p.nombre : "");
-      put("gestorTelefono", p ? p.telefono : "");
-      put("gestorTarjeta", p && p.tarjeta ? fmtTarjeta(p.tarjeta) : "");   // nunca arrastra la tarjeta de otro gestor
-      guardaPerfiles(); opcionesPerfil(); pintar({}); guardar(); actualizar();
-    }
-    $("perfilSel").addEventListener("change", async (e) => {
-      const cur = ident(), base = identP(pf(activo));
-      if (!igual(cur, base) && (cur.n || cur.t || cur.c)) {
-        const r = await dlg("¿Cambiar de gestor?", "Hay datos del gestor escritos que no están guardados en el perfil actual. Si continúas, se reemplazarán.", [["Cancelar", 0], ["Continuar", 1, 1]]);
-        if (r !== 1) { e.target.value = activo; return; }
-      }
-      aplicarPerfil(e.target.value);
-    });
-    $("perfilGuardar").addEventListener("click", async () => {
-      const E = {}, t = tel8(val("gestorTelefono")), conT = $("perfilTarjeta").checked, c = dig(val("gestorTarjeta"));
-      if (!val("gestorNombre")) E.gestorNombre = "Campo obligatorio";
-      if (t.length !== 8) E.gestorTelefono = val("gestorTelefono") ? V.tel(val("gestorTelefono")) : "Campo obligatorio";
-      if (conT && c && c.length !== 16) E.gestorTarjeta = V.tarjeta(c);
-      if (Object.keys(E).length) { pintar(E); toast("⚠️ " + Object.values(E)[0]); return; }
-      const datos = { nombre: val("gestorNombre"), telefono: t, tarjeta: conT ? c : "" };
-      const act = pf(activo), otro = perfiles.find((p) => tel8(p.telefono) === t);
-      const fin = (p) => { Object.assign(p, datos); activo = p.id; guardaPerfiles(); opcionesPerfil(); put("gestorTelefono", t); guardar(); toast("✅ Perfil guardado"); };
-      const nuevo = () => { const p = { id: "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5) }; perfiles.push(p); fin(p); };
-      if (act) {
-        if (igual(identP(act), { n: datos.nombre, t, c: datos.tarjeta })) { toast("Ese perfil ya está guardado así"); return; }
-        if (otro && otro.id !== act.id) { await dlg("Teléfono ya registrado", "Ese teléfono pertenece al perfil de «" + otro.nombre + "». Elígelo en la lista o cambia el teléfono.", [["Entendido", 0, 1]]); return; }
-        const b = [["Cancelar", 0]];
-        if (!otro) b.push(["Guardar como perfil nuevo", 2]);
-        b.push(["Actualizar el perfil de " + act.nombre, 1, 1]);
-        const r = await dlg("Guardar perfil", "Los datos escritos son distintos a los del perfil «" + act.nombre + "». ¿Qué quieres hacer?", b);
-        if (r === 1) fin(act); else if (r === 2) nuevo();
-      } else if (otro) {
-        if (await dlg("Ya existe un perfil con ese teléfono", "Pertenece a «" + otro.nombre + "». ¿Actualizar ese perfil con los datos escritos?", [["Cancelar", 0], ["Actualizar", 1, 1]]) === 1) fin(otro);
-      } else nuevo();
-    });
-    $("perfilBorrar").addEventListener("click", async () => {
-      const p = pf(activo);
-      if (!p) { toast("Primero selecciona un perfil"); return; }
-      if (await dlg("¿Eliminar perfil?", "Se quitará el perfil de «" + p.nombre + "» de este dispositivo. Lo escrito en la planilla no se borra.", [["Cancelar", 0], ["Eliminar", 1, 1]]) !== 1) return;
-      perfiles = perfiles.filter((x) => x.id !== p.id); activo = "";
-      guardaPerfiles(); opcionesPerfil(); guardar(); toast("Perfil eliminado");
-    });
-    window.tarjetasConocidas = () => [dig(val("gestorTarjeta"))].concat(perfiles.map((p) => dig(p.tarjeta))).filter((c) => c.length >= 13);
-
-    // ---------- ESTADO VISUAL ----------
-    function actualizar() {
-      $("g_gestorTarjeta").hidden = !transf();
-      form.elements.fechaEntrega.min = val("fechaPedido");
-      const faltan = FIELDS.filter((f) => visible(f) && (f.req || f.cond) && !val(f.id)).length;
-      const r = $("resumen");
-      r.textContent = faltan ? `⚠️ Faltan ${faltan} campo(s) obligatorio(s)` : "✅ Todos los campos obligatorios están completos";
-      r.classList.toggle("warn", !!faltan);
-      $("preview").textContent = mensaje();
+        const data = JSON.parse(raw);
+        Object.keys(data).forEach(key => {
+          const field = formEl.elements.namedItem(key);
+          if (field && data[key]) field.value = data[key];
+        });
+      } catch (e) { /* borrador corrupto, se ignora */ }
     }
 
-    form.addEventListener("input", (ev) => {
-      const el = ev.target, f = FIELDS.filter((x) => x.id === el.name)[0];
-      if (!f) return;
-      if (f.type === "tel") el.value = el.value.replace(/[^\d+\s().-]/g, "");
-      if (f.type === "card") el.value = fmtTarjeta(el.value);
-      if ($("g_" + f.id).classList.contains("invalid")) pintar(errores(), f.id);
-      guardar(); actualizar();
-    });
-    form.addEventListener("change", (ev) => { if (ev.target.name === "formaCobro") { pintar({}, "gestorTarjeta"); guardar(); actualizar(); } });
-    form.addEventListener("focusout", (ev) => { if (ev.target.type === "tel" && ev.target.name !== "zelleTelefono" && !V.tel(ev.target.value)) ev.target.value = tel8(ev.target.value); });
-    form.addEventListener("click", (ev) => { if (ev.target.type === "date") { try { ev.target.showPicker(); } catch (e) { /* no soportado */ } } });
-    form.addEventListener("submit", (ev) => ev.preventDefault());
-
-    // ---------- ACCIONES ----------
-    function listo() {
-      const E = errores();
-      pintar(E);
-      const ids = Object.keys(E);
-      if (!ids.length) return true;
-      $("resumen").textContent = `⚠️ Revisa ${ids.length} campo(s) marcados en rojo`;
-      $("resumen").classList.add("warn");
-      const g = $("g_" + ids[0]);
-      g.scrollIntoView({ behavior: "smooth", block: "center" });
-      const c = g.querySelector("input,textarea"); if (c) c.focus({ preventScroll: true });
-      toast("⚠️ Faltan datos o hay campos con errores");
-      return false;
+    function clearDraft(formEl, storageKey) {
+      if (!confirm("¿Borrar todos los datos escritos en esta planilla?")) return;
+      localStorage.removeItem(storageKey);
+      formEl.reset();
+      restoreDefaults(formEl);
+      document.getElementById("saveIndicator").textContent = "Borrador borrado";
     }
-    async function copiar(txt) {
-      try { await navigator.clipboard.writeText(txt); }
-      catch (e) {
-        const ta = document.createElement("textarea");
-        ta.value = txt; ta.style.cssText = "position:fixed;left:-9999px;top:0";
-        document.body.appendChild(ta); ta.select();
-        const ok = document.execCommand("copy"); ta.remove();
-        if (!ok) throw e;
-      }
+
+    function restoreDefaults(formEl) {
+      const defaults = {
+        gestorNombre: "Claudia Yamaye González Rodríguez",
+        gestorTelefono: "54571729",
+        gestorTarjeta: "9224-0699-9677-9001",
+      };
+      Object.keys(defaults).forEach(key => {
+        const field = formEl.elements.namedItem(key);
+        if (field) field.value = defaults[key];
+      });
     }
-    $("btnCopiar").addEventListener("click", async () => {
-      if (!listo()) return;
-      const b = $("btnCopiar"), orig = b.innerHTML;
-      try { await copiar(mensaje()); b.textContent = "✅ ¡Copiada!"; toast("Planilla copiada: pégala en WhatsApp"); }
-      catch (e) { b.textContent = "❌ No se pudo copiar"; }
-      setTimeout(() => { b.innerHTML = orig; }, 1800);
-    });
-    $("btnEnviar").addEventListener("click", async () => {
-      if (!listo()) return;
-      const txt = mensaje();
-      if (!navigator.onLine) { try { await copiar(txt); } catch (e) { /* nada */ } toast("Sin conexión: planilla copiada. Pégala en WhatsApp cuando vuelva la señal."); return; }
-      const url = "https://wa.me/" + dig(WHATSAPP_DESTINO) + "?text=" + encodeURIComponent(txt);
-      if (!window.open(url, "_blank", "noopener")) window.location.href = url;
-    });
-    $("btnLimpiar").addEventListener("click", async () => {
-      if (await dlg("¿Limpiar todos los campos?", "Se borrarán todos los datos de este pedido. Si tienes un perfil de gestor seleccionado, se mantiene.", [["Cancelar", 0], ["Limpiar", 1, 1]]) !== 1) return;
-      FIELDS.forEach((f) => put(f.id, ""));
-      put("fechaPedido", hoy());
-      aplicarPerfil(activo); guardarYa(); toast("Planilla limpia");
-    });
 
-    // Compatibilidad con ia.js (solo expone campos del pedido y del pago; nunca datos del gestor)
-    const CATEGORIES = { gestores: { formId: "formGestores", storageKey: K.borrador,
-      fieldDefs: FIELDS.filter((f) => f.sec === "pedido" || f.sec === "zelle").map((f) => ({ id: f.id, label: f.label })), zelleDefs: [], gestorDefs: [] } };
-    let currentCategory = "gestores";
+    // ---------- CAMBIO DE CATEGORÍA ----------
+    function switchCategory(key) {
+      currentCategory = key;
+      localStorage.setItem("planilla_categoria", key);
+      const cat = CATEGORIES[key];
 
-    // ---------- CONEXIÓN ----------
+      document.getElementById("btnVenta").classList.toggle("active", key === "venta");
+      document.getElementById("btnGeneral").classList.toggle("active", key === "general");
+      document.getElementById("formVenta").style.display = key === "venta" ? "block" : "none";
+      document.getElementById("formGeneral").style.display = key === "general" ? "block" : "none";
+
+      document.getElementById("headerBadge").textContent = cat.badge;
+      document.getElementById("headerTitle").textContent = cat.title;
+      document.getElementById("headerSub").textContent = cat.sub;
+
+      const formEl = document.getElementById(cat.formId);
+      restoreDraft(formEl, cat.storageKey);
+      updateSaveIndicatorFromStorage(cat.storageKey);
+    }
+
+    function updateSaveIndicatorFromStorage(storageKey) {
+      const raw = localStorage.getItem(storageKey);
+      document.getElementById("saveIndicator").textContent = raw
+        ? "Hay un borrador guardado en este dispositivo"
+        : "Sin borrador guardado todavía";
+    }
+
+    // ---------- ESTADO DE CONEXIÓN ----------
     function updateStatus() {
-      $("statusBar").classList.toggle("offline", !navigator.onLine);
-      $("statusText").textContent = navigator.onLine ? "En línea" : "Sin conexión — los datos se guardan en este dispositivo";
+      const bar = document.getElementById("statusBar");
+      const text = document.getElementById("statusText");
+      if (navigator.onLine) {
+        bar.classList.remove("offline");
+        text.textContent = "En línea";
+      } else {
+        bar.classList.add("offline");
+        text.textContent = "Sin conexión — los datos se guardan en este dispositivo";
+      }
     }
     window.addEventListener("online", updateStatus);
     window.addEventListener("offline", updateStatus);
 
-    // ---------- ARRANQUE ----------
-    const hayBorrador = restaurar();
-    if (!hayBorrador && activo) aplicarPerfil(activo);
-    opcionesPerfil();
-    if (!val("fechaPedido")) put("fechaPedido", hoy());
-    $("saveIndicator").textContent = hayBorrador ? "Borrador recuperado de este dispositivo" : "Sin borrador guardado todavía";
-    actualizar(); updateStatus();
+    // ---------- ENVÍO Y COPIADO ----------
+    // Envío directo al número de WhatsApp, igual que la Planilla de Gestores.
+    async function handleSubmit(e, cat) {
+      e.preventDefault();
+      const formEl = document.getElementById(cat.formId);
+      const data = getFormData(formEl);
+      const message = buildMessage(cat, data);
 
+      // Sin conexión: copiar el mensaje y avisar. WhatsApp abrirá cuando vuelva la señal.
+      if (!navigator.onLine) {
+        try { await copyToClipboard(message); } catch (err) { /* nada */ }
+        alert("Estás sin conexión. El mensaje fue copiado; pégalo en WhatsApp cuando vuelva la señal.");
+        return;
+      }
+
+      // https://wa.me/<número>?text=<mensaje>  →  abre WhatsApp directo en ese chat
+      const url = "https://wa.me/" + WHATSAPP_DESTINO + "?text=" + encodeURIComponent(message);
+      if (!window.open(url, "_blank", "noopener")) {
+        window.location.href = url;
+      }
+    }
+
+    function handleCopy(btn, cat) {
+      const formEl = document.getElementById(cat.formId);
+      const data = getFormData(formEl);
+      const message = buildMessage(cat, data);
+      copyToClipboard(message)
+        .then(() => {
+          const original = btn.innerHTML;
+          btn.textContent = "✅ ¡Copiado!";
+          setTimeout(() => { btn.innerHTML = original; }, 1800);
+        })
+        .catch(() => {
+          const original = btn.innerHTML;
+          btn.textContent = "❌ Error";
+          setTimeout(() => { btn.innerHTML = original; }, 1800);
+        });
+    }
+
+    // ---------- INICIALIZACIÓN ----------
+    Object.keys(CATEGORIES).forEach(key => {
+      const cat = CATEGORIES[key];
+      const formEl = document.getElementById(cat.formId);
+
+      formEl.addEventListener("submit", (e) => handleSubmit(e, cat));
+      formEl.addEventListener("input", () => scheduleSave(formEl, cat.storageKey));
+      formEl.querySelector(".copy-btn").addEventListener("click", function() { handleCopy(this, cat); });
+      formEl.querySelector(".clear-btn").addEventListener("click", () => clearDraft(formEl, cat.storageKey));
+
+      restoreDraft(formEl, cat.storageKey);
+    });
+
+    document.getElementById("autofillBtn").addEventListener("click", runAutofill);
+    document.getElementById("clearPasteBtn").addEventListener("click", () => {
+      document.getElementById("pasteInput").value = "";
+      document.getElementById("autofillResult").textContent = "Detecta lo que puede (nombre, CI, teléfono, equipo, dirección, montos...). Siempre revisa antes de enviar.";
+    });
+
+    switchCategory(currentCategory);
+    updateStatus();
+
+    // Service Worker
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => { /* silencioso */ }); });
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(() => { /* silencioso */ });
+      });
     }
   </script>
   <script src="ia.js"></script>
