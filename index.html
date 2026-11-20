@@ -46,6 +46,17 @@
       justify-content: center;
       padding: 24px 16px 60px;
       line-height: 1.5;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* Permitir seleccionar y editar solo dentro de los campos del formulario */
+    input, textarea, select {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
     }
 
     .app { max-width: 720px; width: 100%; }
@@ -166,17 +177,6 @@
     .zelle-box, .gestor-box { background: #f8fafc; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 16px 16px 4px; margin-top: 4px; }
     .zelle-box .group:last-child, .gestor-box .group:last-child { margin-bottom: 0; }
 
-    .paste-box {
-      background: var(--card-bg); border: 1px solid var(--border-light); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 18px 20px 20px; margin-bottom: 14px;
-    }
-    .paste-box textarea#pasteInput { min-height: 90px; }
-    .paste-box .hint { text-align: left; margin-top: 8px; }
-    input.autofilled, textarea.autofilled {
-      background: #fffbeb !important; border-color: #fcd34d !important;
-      transition: background 1.5s ease, border-color 1.5s ease;
-    }
-
     .fijo-tag { font-weight: 400; font-size: 12px; color: var(--text-muted); }
 
     .submit-area { padding: 22px 32px 32px; border-top: 1px solid var(--border-light); margin-top: 8px; display: flex; flex-direction: column; gap: 10px; }
@@ -216,7 +216,7 @@
       .ticket { border-radius: 12px; }
       input, textarea, select { font-size: 13px; padding: 8px 12px; }
     }
-  
+
     /* ===== Planilla de Gestores: añadidos ===== */
     .legend{font-size:12px;color:var(--text-muted);margin-bottom:4px}
     .req{color:var(--danger);font-weight:700}
@@ -261,17 +261,6 @@
       <span class="save-indicator" id="saveIndicator">Sin borrador guardado todavía</span>
     </div>
 
-    <div class="paste-box">
-      <div class="section-title"><span class="emoji">🪄</span> Autocompletar desde el mensaje del cliente</div>
-      <textarea id="pasteInput" placeholder="Pega aquí la conversación o el mensaje del cliente por WhatsApp (nombre, teléfono, combo, dirección, precio, etc. en cualquier orden)"></textarea>
-      <div class="btn-group" style="margin-top:10px;">
-        <button type="button" class="btn btn-primary" id="autofillBtn">🪄 Autocompletar campos</button>
-        <button type="button" class="btn btn-primary" id="iaBtn">🤖 Analizar conversación con IA</button>
-        <button type="button" class="btn btn-outline" id="clearPasteBtn">🗑️ Borrar texto pegado</button>
-      </div>
-      <div class="hint" id="autofillResult">Solo rellena campos del pedido y del pago por Zelle. Tus datos de gestor y tu tarjeta nunca se tocan ni se envían a la IA.</div>
-    </div>
-
     <div class="ticket">
       <header>
         <div class="header-left">
@@ -303,11 +292,43 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
+    // ---------- Disuasión de copia del código ----------
+    // NOTA: esto solo dificulta la copia casual. El código de una página web
+    // siempre llega al navegador y puede verse con el menú del navegador,
+    // con "ver código fuente", desactivando JavaScript o con herramientas externas.
+    (function () {
+      const esCampo = (el) =>
+        el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+
+      // Bloquear menú contextual (clic derecho / long-press)
+      document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+      // Bloquear atajos típicos de inspección y copia del código
+      document.addEventListener("keydown", (e) => {
+        const k = (e.key || "").toLowerCase();
+        const ctrl = e.ctrlKey || e.metaKey;
+        if (e.key === "F12") { e.preventDefault(); return; }
+        if (ctrl && e.shiftKey && (k === "i" || k === "j" || k === "c" || k === "k")) { e.preventDefault(); return; }
+        if (ctrl && (k === "u" || k === "s")) { e.preventDefault(); return; }
+        if (ctrl && k === "a" && !esCampo(e.target)) { e.preventDefault(); return; }
+        if (ctrl && k === "c" && !esCampo(e.target)) { e.preventDefault(); }
+      }, true);
+
+      // Bloquear copia/corte/arrastre/selección fuera de los campos del formulario
+      const bloquear = (e) => { if (!esCampo(e.target)) e.preventDefault(); };
+      document.addEventListener("copy", bloquear, true);
+      document.addEventListener("cut", bloquear, true);
+      document.addEventListener("dragstart", bloquear, true);
+      document.addEventListener("selectstart", bloquear, true);
+    })();
+  </script>
+
+  <script>
     // Número de WhatsApp de destino (opcional, solo dígitos con código de país, p. ej. "5355555555").
     // Vacío = WhatsApp deja elegir el chat al enviar.
     const WHATSAPP_DESTINO = "";
     // Claves propias de esta planilla (no se mezclan con las de la Planilla de Venta).
-    const K = { borrador: "gestores_borrador", perfiles: "gestores_perfiles", activo: "gestores_perfil_activo", pegado: "gestores_pegado" };
+    const K = { borrador: "gestores_borrador", perfiles: "gestores_perfiles", activo: "gestores_perfil_activo" };
 
     const ls = {
       get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -348,13 +369,13 @@
       F("direccion", "pedido", "📍", "Dirección", { req: 1, full: 1, ph: "Calle, número, entre calles" }),
       F("referencia", "pedido", "🧭", "Punto de referencia", { full: 1, ph: "Ej: frente al parque" }),
       F("domicilio", "pedido", "🛵", "Costo del domicilio (si es para municipio)", { full: 1, ph: "Ej: 200 MN", v: "cifra", msg: "Costo del domicilio" }),
-      F("zelleNombre", "zelle", "👤", "Nombre de la persona que realizará el pago", { req: 1, full: 1, ph: "Nombre completo", msg: "Nombre" }),
+      F("zelleNombre", "zelle", "👤", "Nombre de la persona que realizará el pago", { full: 1, ph: "Nombre completo", msg: "Nombre" }),
       F("zelleTelefono", "zelle", "📱", "Teléfono", { type: "tel", req: 1, ph: "Número de contacto", v: "telAny" }),
       F("zelleHorario", "zelle", "🕒", "Horario en que está disponible", { ph: "Ej: 2:00 pm a 6:00 pm" }),
       F("gestorNombre", "gestor", "👤", "Nombre del gestor", { req: 1, ph: "Nombre completo" }),
       F("gestorTelefono", "gestor", "📱", "Teléfono del gestor", { type: "tel", req: 1, ph: "5xxxxxxx", v: "tel" }),
       F("subida", "gestor", "📈", "Cuánto le subió al combo", { req: 1, ph: "Ej: 5 USD", v: "cifra", msg: "Subida al combo" }),
-      F("tasa", "gestor", "💱", "Tasa de cambio", { req: 1, ph: "Ej: 1 USD = 380 MN", v: "cifra" }),
+      F("tasa", "gestor", "💱", "Tasa de cambio", { ph: "Ej: 1 USD = 380 MN", v: "cifra" }),
       F("formaCobro", "gestor", "💰", "Forma de cobrar", { type: "radio", req: 1, full: 1, opts: ["Efectivo", "Transferencia"] }),
       F("gestorTarjeta", "gestor", "💳", "Tarjeta del gestor", { type: "card", cond: 1, full: 1, ph: "0000-0000-0000-0000", v: "tarjeta" }),
       F("observaciones", "obs", "📝", "Observaciones", { type: "area", full: 1, ph: "Cualquier información adicional relacionada con el pedido..." }),
@@ -619,352 +640,11 @@
       if (!window.open(url, "_blank", "noopener")) window.location.href = url;
     });
     $("btnLimpiar").addEventListener("click", async () => {
-      if (await dlg("¿Limpiar todos los campos?", "Se borrarán todos los datos de este pedido y el texto pegado. Si tienes un perfil de gestor seleccionado, se mantiene.", [["Cancelar", 0], ["Limpiar", 1, 1]]) !== 1) return;
+      if (await dlg("¿Limpiar todos los campos?", "Se borrarán todos los datos de este pedido. Si tienes un perfil de gestor seleccionado, se mantiene.", [["Cancelar", 0], ["Limpiar", 1, 1]]) !== 1) return;
       FIELDS.forEach((f) => put(f.id, ""));
       put("fechaPedido", hoy());
-      $("pasteInput").value = ""; ls.del(K.pegado);
-      $("autofillResult").textContent = "Planilla limpia.";
       aplicarPerfil(activo); guardarYa(); toast("Planilla limpia");
     });
-
-    // ---------- AUTOCOMPLETADO SIN IA (heurístico, reutilizado de la Planilla de Venta) ----------
-    const DEVICE_KEYWORDS = [
-      "iphone", "ipad", "macbook", "imac", "airpods", "apple watch",
-      "samsung", "galaxy", "xiaomi", "redmi", "poco", "huawei", "honor",
-      "tecno", "infinix", "motorola", "moto g", "oneplus", "realme",
-      "tablet", "laptop", "notebook", "smart tv", "tv box", "tv",
-      "play station", "playstation", "ps5", "ps4", "xbox", "nintendo switch",
-      "power bank", "cargador", "audífonos", "auriculares", "bocina", "parlante",
-      "combo", "lámpara", "lampara"
-    ];
-
-    function normalizeCurrency(raw) {
-      let c = raw.toUpperCase();
-      if (c === "$" || c.startsWith("D")) return "USD";
-      if (c.startsWith("PES") || c === "MN" || c === "CUP") return "MN";
-      return c;
-    }
-
-    function extractMoney(text) {
-      const m = text.match(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/i);
-      if (!m) return null;
-      return { amount: m[1].replace(",", "."), currency: normalizeCurrency(m[2]) };
-    }
-
-    function formatMoneyObj(amount, currency) {
-      return `${amount} ${currency}`;
-    }
-
-    // Clasifica por comas (estructura típica de mensajes con separación)
-    function classifySegments(text) {
-      const segments = text.split(",").map(s => s.trim()).filter(Boolean);
-      const values = {};
-      let nombreSet = false;
-      let equipoSet = false;
-      let cantidadSet = false;
-      let cambioSet = false;
-      let direccionSet = false;
-      let referenciaSet = false;
-
-      const ciRe = /\b\d{11}\b/;
-      const phoneRe = /(?:\+?53)?\s?5\d{7}\b/;
-      const addressRe = /(calle|avenida|\bave\.?\b|reparto|vedado|edificio|apto|apartamento|entre\s)/i;
-      const refRe = /(cerca de|frente a|al lado de|referencia:?)/i;
-      const garantiaRe = /garant[ií]a/i;
-      const domicilioKw = /domicilio|env[ií]o|mensajer[íi]a|delivery/i;
-      const vueltoKw = /vuelto/i;
-      const comisionKw = /comisi[oó]n/i;
-      const zelleKw = /zelle/i;
-      const cambioKw = /cambio|tasa|1\s*usd\s*[=x]/i;
-      const moneyReGlobal = new RegExp("(\\d+[.,]?\\d*)\\s*(usd|cup|mn|mlc|\\$|d[oó]lares|pesos)", "gi");
-
-      function pickFirstMoney(seg) {
-        const m = [...seg.matchAll(moneyReGlobal)];
-        if (m.length) return formatMoneyObj(m[0][1].replace(",", "."), normalizeCurrency(m[0][2]));
-        return null;
-      }
-
-      for (let seg of segments) {
-        // Si el segmento contiene "cambio" o "tasa", extraer el monto como cambio
-        if (cambioKw.test(seg) && !cambioSet) {
-          const m = seg.match(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/i);
-          if (m) {
-            values.cambio = formatMoneyObj(m[1].replace(",", "."), normalizeCurrency(m[2]));
-            cambioSet = true;
-            continue;
-          } else {
-            // Si no hay monto, puede ser "10000 MN o 10 usd" -> tomar ambos
-            const all = [...seg.matchAll(moneyReGlobal)];
-            if (all.length >= 2) {
-              values.cambio = all.map(m => formatMoneyObj(m[1].replace(",", "."), normalizeCurrency(m[2]))).join(" o ");
-              cambioSet = true;
-              continue;
-            }
-          }
-        }
-
-        // Teléfono
-        if (phoneRe.test(seg)) {
-          const tel = seg.match(phoneRe)[0].replace(/[^\d]/g, "");
-          if (zelleKw.test(seg)) values.zelleTelefono = tel;
-          else if (!values.telCliente) values.telCliente = tel;
-          else if (!values.zelleTelefono) values.zelleTelefono = tel;
-          continue;
-        }
-
-        // CI
-        if (ciRe.test(seg) && !values.ciCliente) {
-          values.ciCliente = seg.match(ciRe)[0];
-          continue;
-        }
-
-        // Garantía
-        if (garantiaRe.test(seg) && !values.garantia) {
-          values.garantia = seg.replace(garantiaRe, "").trim();
-          continue;
-        }
-
-        // Zelle (nombre o teléfono)
-        if (zelleKw.test(seg) && !new RegExp(moneyReGlobal).test(seg) && !phoneRe.test(seg)) {
-          const name = seg.replace(zelleKw, "").replace(/a nombre de|nombre|es|:/gi, "").trim();
-          if (name && !values.zelleNombre) values.zelleNombre = name;
-          continue;
-        }
-
-        // Dirección
-        if (addressRe.test(seg) && !direccionSet) {
-          values.direccion = seg;
-          direccionSet = true;
-          continue;
-        }
-
-        // Referencia
-        if (refRe.test(seg) && !referenciaSet) {
-          values.referencia = seg;
-          referenciaSet = true;
-          continue;
-        }
-
-        // Si tiene monto (dinero)
-        if (moneyReGlobal.test(seg)) {
-          const firstMoney = pickFirstMoney(seg);
-          if (!firstMoney) continue;
-
-          // Domicilio
-          if (domicilioKw.test(seg) && !values.domicilio) {
-            values.domicilio = firstMoney;
-            continue;
-          }
-          // Vuelto
-          if (vueltoKw.test(seg) && !values.vuelto) {
-            values.vuelto = firstMoney;
-            continue;
-          }
-          // Comisión
-          if (comisionKw.test(seg) && !values.comision) {
-            values.comision = firstMoney;
-            continue;
-          }
-
-          // Si es un precio de equipo (ej. "lampara (55 usd)") y todavía no tenemos equipo
-          if (!equipoSet && /\(/.test(seg) && /\)/.test(seg)) {
-            // El equipo es todo el segmento
-            values.equipo = seg;
-            equipoSet = true;
-            // El precio podría ir también como cantidad, pero mejor esperar a otro segmento
-            continue;
-          }
-
-          // Si no se ha asignado cantidad, asignarlo como cantidad
-          if (!cantidadSet) {
-            // Pero si el segmento tiene palabras como "lampara" y un número, podría ser cantidad con unidad
-            // Ej: "1 lampara usd o mn o transferencia"
-            const unitMatch = seg.match(/(\d+)\s*([a-zA-Záéíóúñ]+)/i);
-            if (unitMatch && DEVICE_KEYWORDS.some(kw => seg.toLowerCase().includes(kw))) {
-              // Es una cantidad con unidad (ej. 1 lámpara)
-              const unit = unitMatch[2];
-              const moneda = seg.match(/(usd|mn|cup|mlc)/i);
-              const monedaStr = moneda ? moneda[0].toUpperCase() : "";
-              values.cantidad = `${unitMatch[1]} ${unit}${monedaStr ? ' en ' + monedaStr : ''}`;
-              cantidadSet = true;
-              continue;
-            } else {
-              // Si no, es solo un monto (ej. "150 USD")
-              values.cantidad = firstMoney;
-              cantidadSet = true;
-              continue;
-            }
-          }
-
-          // Si ya tenemos cantidad, y no es cambio, guardar como cambio (si no está ya)
-          if (!cambioSet) {
-            values.cambio = firstMoney;
-            cambioSet = true;
-            continue;
-          }
-
-          // Si sobra, va a observaciones
-        }
-
-        // Nombre (primer segmento sin números, corto, y sin palabras clave)
-        if (!nombreSet && !/\d/.test(seg) && seg.split(/\s+/).length <= 4 && !/calle|avenida|reparto|zelle|domicilio|garantía|vuelto|comisión|cambio/i.test(seg)) {
-          values.nombreCliente = seg;
-          nombreSet = true;
-          continue;
-        }
-
-        // Si es un equipo sin precio claro (ej. "lampra")
-        if (!equipoSet && DEVICE_KEYWORDS.some(kw => seg.toLowerCase().includes(kw))) {
-          // Si tiene paréntesis con precio, ya lo capturamos antes, sino tomamos el segmento entero
-          if (!/\(/.test(seg) || !/\)/.test(seg)) {
-            values.equipo = seg;
-            equipoSet = true;
-            continue;
-          }
-        }
-
-        // Si no encaja, guardar en observaciones (acumulando)
-        if (seg) {
-          if (!values.observaciones) values.observaciones = seg;
-          else values.observaciones += ", " + seg;
-        }
-      }
-
-      return values;
-    }
-
-    // Análisis de texto libre (cuando no hay comas o para completar)
-    function autofillFreeform(text) {
-      const values = {};
-      const lower = text.toLowerCase();
-
-      // Nombre: buscar "me llamo", "nombre", o primer palabra sin números
-      let nameMatch = text.match(/(?:me llamo|mi nombre es|soy|nombre:?\s*)\s*([a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+){0,3})/i);
-      if (nameMatch) {
-        values.nombreCliente = nameMatch[1].trim();
-      } else {
-        // Tomar primer token que no sea número ni palabra clave
-        const tokens = text.split(/[\s,]+/);
-        for (const t of tokens) {
-          if (t.length > 1 && !/\d/.test(t) && !/calle|avenida|reparto|zelle|domicilio|garantía|vuelto|comisión|cambio|usd|mn|cup|mlc/i.test(t)) {
-            values.nombreCliente = t;
-            break;
-          }
-        }
-      }
-
-      // Teléfono
-      const telMatch = text.match(/(?:\+?53)?\s?5\d{7}\b/);
-      if (telMatch) values.telCliente = telMatch[0].replace(/[^\d]/g, "");
-
-      // CI
-      const ciMatch = text.match(/\b\d{11}\b/);
-      if (ciMatch) values.ciCliente = ciMatch[0];
-
-      // Equipo: buscar palabra clave y capturar hasta coma o punto o monto
-      for (const kw of DEVICE_KEYWORDS) {
-        const idx = lower.indexOf(kw);
-        if (idx !== -1) {
-          // Tomar desde la palabra clave hasta la siguiente coma o punto o fin
-          const start = idx;
-          let end = text.length;
-          const nextComma = text.indexOf(",", start);
-          const nextDot = text.indexOf(".", start);
-          const nextSemicolon = text.indexOf(";", start);
-          const nextNewline = text.indexOf("\n", start);
-          const stops = [nextComma, nextDot, nextSemicolon, nextNewline].filter(i => i !== -1);
-          if (stops.length) end = Math.min(...stops);
-          let fragment = text.slice(start, end).trim();
-          // Si el fragmento es muy largo, acortar a 50 chars
-          if (fragment.length > 50) fragment = fragment.slice(0, 50);
-          values.equipo = fragment;
-          break;
-        }
-      }
-
-      // Dirección
-      const dirMatch = text.match(/(calle[^.,\n]*|avenida[^.,\n]*|reparto[^.,\n]*|vedado[^.,\n]*|edificio[^.,\n]*|apto[^.,\n]*|apartamento[^.,\n]*|entre\s[^.,\n]*)/i);
-      if (dirMatch) values.direccion = dirMatch[0].trim();
-
-      // Referencia
-      const refMatch = text.match(/(cerca de[^.,\n]*|frente a[^.,\n]*|al lado de[^.,\n]*|referencia:?\s*[^.,\n]*)/i);
-      if (refMatch) values.referencia = refMatch[0].trim();
-
-      // Garantía
-      const garMatch = text.match(/garant[ií]a[:\s]*([^.,\n]*)/i);
-      if (garMatch && garMatch[1]) values.garantia = garMatch[1].trim();
-
-      // Cantidad: buscar "1 lampara" o similar
-      const unitMatch = text.match(/(\d+)\s*([a-zA-Záéíóúñ]+)\s*(?:en\s*)?(usd|mn|cup|mlc)?/i);
-      if (unitMatch && DEVICE_KEYWORDS.some(kw => lower.includes(kw))) {
-        const unit = unitMatch[2];
-        const moneda = unitMatch[3] ? unitMatch[3].toUpperCase() : "";
-        values.cantidad = `${unitMatch[1]} ${unit}${moneda ? ' en ' + moneda : ''}`;
-      } else {
-        // Buscar cualquier monto con moneda
-        const money = extractMoney(text);
-        if (money) values.cantidad = formatMoneyObj(money.amount, money.currency);
-      }
-
-      // Cambio: buscar "cambio", "tasa", o relación "1 usd ="
-      const cambioMatch = text.match(/cambio[:\s]*([^.,\n]*)/i);
-      if (cambioMatch && cambioMatch[1]) {
-        const val = cambioMatch[1].trim();
-        const money = extractMoney(val);
-        if (money) values.cambio = formatMoneyObj(money.amount, money.currency);
-        else values.cambio = val;
-      } else {
-        const rateMatch = text.match(/1\s*(?:usd)?\s*[=x]\s*(\d+)\s*(cup|mn)?/i);
-        if (rateMatch) {
-          const amount = rateMatch[1];
-          const currency = rateMatch[2] ? rateMatch[2].toUpperCase() : "MN";
-          values.cambio = `1 USD = ${amount} ${currency}`;
-        } else {
-          // Buscar dos montos con distintas monedas (ej. "10000 MN o 10 usd")
-          const allMoney = [...text.matchAll(/(\d+[.,]?\d*)\s*(usd|cup|mn|mlc|\$|d[oó]lares|pesos)/gi)];
-          if (allMoney.length >= 2) {
-            const m1 = { amount: allMoney[0][1].replace(",", "."), currency: normalizeCurrency(allMoney[0][2]) };
-            const m2 = { amount: allMoney[1][1].replace(",", "."), currency: normalizeCurrency(allMoney[1][2]) };
-            if (m1.currency !== m2.currency) {
-              values.cambio = `${m1.amount} ${m1.currency} o ${m2.amount} ${m2.currency}`;
-            }
-          }
-        }
-      }
-
-      // Domicilio
-      const domMatch = text.match(/domicilio[:\s]*([^.,\n]*)/i);
-      if (domMatch && domMatch[1]) values.domicilio = domMatch[1].trim();
-
-      // Zelle
-      const zelleIdx = lower.indexOf("zelle");
-      if (zelleIdx !== -1) {
-        const window_ = text.slice(zelleIdx, zelleIdx + 80);
-        const tel = window_.match(/(?:\+?53)?\s?5\d{7}\b/);
-        if (tel) values.zelleTelefono = tel[0].replace(/[^\d]/g, "");
-        const name = window_.match(/(?:a nombre de|nombre:?\s*)\s*([a-zA-ZÁÉÍÓÚÑáéíóúñ]+(?:\s+[a-zA-ZÁÉÍÓÚÑáéíóúñ]+){0,2})/i);
-        if (name) values.zelleNombre = name[1].trim();
-      }
-
-      return values;
-    }
-    function runAutofill() {
-      const txt = $("pasteInput").value.trim();
-      const v = Object.assign({}, autofillFreeform(txt), classifySegments(txt));
-      const alias = { equipo: "combo", cantidad: "precio" };
-      let n = 0;
-      Object.keys(v).forEach((k) => {
-        const id = alias[k] || k, f = FIELDS.filter((x) => x.id === id)[0];
-        if (!f || f.sec === "gestor" || /^fecha/.test(id) || !v[k] || val(id)) return;
-        put(id, f.v === "tel" ? tel8(v[k]) : v[k]);
-        const el = form.elements[id]; el.classList.add("autofilled"); setTimeout(() => el.classList.remove("autofilled"), 4000);
-        n++;
-      });
-      $("autofillResult").textContent = n ? `✅ Se completaron ${n} campo(s). Revisa antes de enviar; el resto lo completas a mano.` : "⚠️ No se detectó suficiente información. Completa los campos a mano.";
-      guardar(); actualizar();
-    }
-    $("autofillBtn").addEventListener("click", runAutofill);
-    $("clearPasteBtn").addEventListener("click", () => { $("pasteInput").value = ""; });
 
     // Compatibilidad con ia.js (solo expone campos del pedido y del pago; nunca datos del gestor)
     const CATEGORIES = { gestores: { formId: "formGestores", storageKey: K.borrador,
